@@ -7,7 +7,7 @@ namespace IoCContainer.Services
     {
         static SingletonCreationService instance = null;
         static Dictionary<string, object> objectPool = new Dictionary<string, object>();
-        
+
         static SingletonCreationService()
         {
             instance = new SingletonCreationService();
@@ -17,7 +17,7 @@ namespace IoCContainer.Services
         { }
 
         public static SingletonCreationService GetInstance()
-        {   
+        {
             return instance;
         }
 
@@ -30,6 +30,8 @@ namespace IoCContainer.Services
                 if (objectPool.ContainsKey(t.Name) == false)
                 {
                     obj = ScopedCreationService.GetInstance().GetNewObject(t, arguments);
+                    //obj = Activator.CreateInstance(t, arguments);
+
                     objectPool.Add(t.Name, obj);
                 }
                 else
@@ -41,6 +43,7 @@ namespace IoCContainer.Services
             {
                 // log it maybe
             }
+
 
             return obj;
         }

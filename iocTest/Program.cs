@@ -17,7 +17,7 @@ namespace iocTest
     {
         public void Print()
         {
-            Console.WriteLine("ClassName: {0}, HashCode: {1}", this.GetType().Name, this.GetHashCode());
+            Console.WriteLine("ClassName: {0}, HashCode: {1}, Type: Scoped", this.GetType().Name, this.GetHashCode());
         }
     }
 
@@ -30,7 +30,7 @@ namespace iocTest
     {
         public void Print()
         {
-            Console.WriteLine("ClassName: {0}, HashCode: {1}", this.GetType().Name, this.GetHashCode());
+            Console.WriteLine("ClassName: {0}, HashCode: {1}, Type: Singleton", this.GetType().Name, this.GetHashCode());
         }
     }
 
@@ -51,39 +51,49 @@ namespace iocTest
     class ClassOne : One
     {
         ITest1 m_Itest1 = null;
+        Three m_Three = null;
 
         [Dependency]
-        public ClassOne(ITest1 test1)
+        public ClassOne(ITest1 test1, Three three)
         {
             m_Itest1 = test1;
+            m_Three = three;
         }
 
         public void FunctionOne()
         {
-            Console.WriteLine("ClassName: {0}, HashCode: {1}", this.GetType().Name, this.GetHashCode());
+            Console.WriteLine("ClassName: {0}, HashCode: {1}, Type: Scoped", this.GetType().Name, this.GetHashCode());
 
             m_Itest1.Print();
+            m_Three.FunctionThree();
+
         }
     }
 
     class ClassTwo : Two
     {
         One m_One = null;
-        ITest1 m_Itest1 = null;
+        //Three m_Three = null;
+        ITest2 m_Itest2 = null;
 
         [Dependency]
-        public ClassTwo(ITest1 test1, One one)
+        public ClassTwo(ITest2 test2, One one
+            //, Three three
+            )
         {
-            m_Itest1 = test1;
+            m_Itest2 = test2;
             m_One = one;
+            //m_Three = three;
         }
+
 
         public void FunctionTwo()
         {
-            Console.WriteLine("ClassName: {0}, HashCode: {1}", this.GetType().Name, this.GetHashCode());
+            Console.WriteLine("ClassName: {0}, HashCode: {1}, Type: Scoped", this.GetType().Name, this.GetHashCode());
 
-            m_Itest1.Print();
+            m_Itest2.Print();
             m_One.FunctionOne();
+            //m_Three.FunctionThree();
         }
     }
 
@@ -98,7 +108,8 @@ namespace iocTest
 
         public void FunctionThree()
         {
-            Console.WriteLine("ClassName: {0}, HashCode: {1}", this.GetType().Name, this.GetHashCode());
+            var res = this.GetHashCode();
+            Console.WriteLine("ClassName: {0}, HashCode: {1}, Type: Transient", this.GetType().Name, this.GetHashCode());
 
    
         }
@@ -110,6 +121,8 @@ namespace iocTest
         {
             IContainer container = new IoCContainer.Container();
 
+          
+          
             // testing instance type resigtration for class
             Console.WriteLine("testing instance type resigtration for class");
             container.RegisterInstanceType<ITest1, ClassTest1>();
@@ -127,6 +140,13 @@ namespace iocTest
 
             obj5.Print();
 
+
+            Console.WriteLine();
+
+            container.RegisterTransientType<Three, ClassThree>();
+            Three obj11 = container.Resolve<Three>();
+            obj11.FunctionThree();
+
             // testing nested dependency for 2 levels
             Console.WriteLine();
             Console.WriteLine("testing nested dependency for 2 levels");
@@ -135,21 +155,21 @@ namespace iocTest
 
             obj9.FunctionOne();
 
-            // testing nested dependency for 2 levels with 2 arguments
+
+
+            //testing nested dependency for 2 levels with 2 arguments
+
             Console.WriteLine();
-            Console.WriteLine("testing nested dependency for 2 levels with 2 arguments");
-            container.RegisterInstanceType<Two, ClassTwo>();
+           Console.WriteLine("testing nested dependency for 2 levels with 2 arguments");
+           container.RegisterInstanceType<Two, ClassTwo>();
             Two obj10 = container.Resolve<Two>();
+            
 
             obj10.FunctionTwo();
 
 
-            // testing nested dependency for 2 levels with 2 arguments
-            Console.WriteLine();
-            Console.WriteLine("2nd request");
 
-
-            obj10.FunctionTwo();
+            //obj11.FunctionTwo();
 
             Console.ReadLine();
         }

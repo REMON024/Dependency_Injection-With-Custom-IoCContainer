@@ -12,7 +12,7 @@ namespace IoCContainer
     public class Container : IContainer
     {
         Dictionary<Type, RegistrationModel> instanceRegistry = new Dictionary<Type, RegistrationModel>();
-        
+
         public void RegisterInstanceType<I, C>()
             where I : class
             where C : class
@@ -72,7 +72,7 @@ namespace IoCContainer
 
                     var dependentCtor = consInfo.FirstOrDefault(item => item.CustomAttributes.FirstOrDefault(att => att.AttributeType == typeof(DependencyAttribute)) != null);
 
-                    if(dependentCtor == null)
+                    if (dependentCtor == null)
                     {
                         // use the default constructor to create
                         obj = CreateInstance(model);

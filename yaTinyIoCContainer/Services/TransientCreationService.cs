@@ -26,6 +26,7 @@ namespace IoCContainer.Services
             try
             {
                 obj = Activator.CreateInstance(t, arguments);
+                var res = obj.GetHashCode();
             }
             catch
             {

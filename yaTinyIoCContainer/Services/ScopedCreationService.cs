@@ -25,32 +25,22 @@ namespace IoCContainer.Services
         public object GetNewObject(Type t, object[] arguments = null)
         {
             object obj = null;
-
-
-
             try
             {
-                //if (objectPools.ContainsKey(t.Name) == false)
-                //{
-                //    obj = Activator.CreateInstance(t, arguments);
-                //    //obj = TransientCreationService.GetInstance().GetNewObject(t, arguments);
+                if (objectPools.ContainsKey(t.Name) == false)
+                {
+                    obj = Activator.CreateInstance(t, arguments);
+                    //obj = TransientCreationService.GetInstance().GetNewObject(t, arguments);
 
-                //    objectPools.Add(t.Name, obj);
+                    objectPools.Add(t.Name, obj);
+                }
+                else
+                {
+                    obj = objectPools[t.Name];
+                }
 
-
-                //}
-                //else
-                //{
-                //    obj = objectPools[t.Name];
-                //}
-
-                obj = TransientCreationService.GetInstance().GetNewObject(t, arguments);
+                //obj = TransientCreationService.GetInstance().GetNewObject(t, arguments);
                 //objectPools.Add(t.Name, obj);
-
-
-
-
-
             }
             catch
             {
@@ -58,6 +48,11 @@ namespace IoCContainer.Services
             }
 
             return obj;
+        }
+
+        public void clearObjectPull()
+        {
+            objectPools = new Dictionary<string, object>();
         }
     }
 }

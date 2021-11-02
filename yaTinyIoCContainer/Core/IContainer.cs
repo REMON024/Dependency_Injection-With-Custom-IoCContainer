@@ -15,5 +15,7 @@
             where C : class;
 
         T Resolve<T>();
+
+        void clearScopedPull();
     }
 }

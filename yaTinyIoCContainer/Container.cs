@@ -126,5 +126,10 @@ namespace IoCContainer
 
             return returnedObj;
         }
+
+        public void clearScopedPull()
+        {
+            ScopedCreationService.GetInstance().clearObjectPull();
+        }
     }
 }

@@ -51,13 +51,13 @@ namespace iocTest
     class ClassOne : One
     {
         ITest1 m_Itest1 = null;
-        Three m_Three = null;
+        
 
         [Dependency]
-        public ClassOne(ITest1 test1, Three three)
+        public ClassOne(ITest1 test1)
         {
             m_Itest1 = test1;
-            m_Three = three;
+            
         }
 
         public void FunctionOne()
@@ -65,7 +65,7 @@ namespace iocTest
             Console.WriteLine("ClassName: {0}, HashCode: {1}, Type: Scoped", this.GetType().Name, this.GetHashCode());
 
             m_Itest1.Print();
-            m_Three.FunctionThree();
+            
 
         }
     }
@@ -73,17 +73,17 @@ namespace iocTest
     class ClassTwo : Two
     {
         One m_One = null;
-        //Three m_Three = null;
+        Three m_Three = null;
         ITest2 m_Itest2 = null;
 
         [Dependency]
         public ClassTwo(ITest2 test2, One one
-            //, Three three
+            , Three three
             )
         {
             m_Itest2 = test2;
             m_One = one;
-            //m_Three = three;
+            m_Three = three;
         }
 
 
@@ -93,17 +93,17 @@ namespace iocTest
 
             m_Itest2.Print();
             m_One.FunctionOne();
-            //m_Three.FunctionThree();
+            m_Three.FunctionThree();
         }
     }
 
     class ClassThree : Three
     {
-        
+
         [Dependency]
         public ClassThree()
         {
-   
+
         }
 
         public void FunctionThree()
@@ -111,7 +111,7 @@ namespace iocTest
             var res = this.GetHashCode();
             Console.WriteLine("ClassName: {0}, HashCode: {1}, Type: Transient", this.GetType().Name, this.GetHashCode());
 
-   
+
         }
     }
 
@@ -119,59 +119,61 @@ namespace iocTest
     {
         static void Main(string[] args)
         {
+            var count = 1;
             IContainer container = new IoCContainer.Container();
 
-          
-          
-            // testing instance type resigtration for class
-            Console.WriteLine("testing instance type resigtration for class");
+
             container.RegisterInstanceType<ITest1, ClassTest1>();
-
-            ITest1 obj1 = container.Resolve<ITest1>();
-
-            obj1.Print();
-
-            // testing singleton registration for class
-            Console.WriteLine();
-            Console.WriteLine("testing singleton registration for class");
             container.RegisterSingletonType<ITest2, ClassTest2>();
-
-            ITest2 obj5 = container.Resolve<ITest2>();
-
-            obj5.Print();
-
-
-            Console.WriteLine();
-
             container.RegisterTransientType<Three, ClassThree>();
-            Three obj11 = container.Resolve<Three>();
-            obj11.FunctionThree();
-
-            // testing nested dependency for 2 levels
-            Console.WriteLine();
-            Console.WriteLine("testing nested dependency for 2 levels");
             container.RegisterInstanceType<One, ClassOne>();
-            One obj9 = container.Resolve<One>();
+            container.RegisterInstanceType<Two, ClassTwo>();
 
-            obj9.FunctionOne();
-
-
-
-            //testing nested dependency for 2 levels with 2 arguments
-
-            Console.WriteLine();
-           Console.WriteLine("testing nested dependency for 2 levels with 2 arguments");
-           container.RegisterInstanceType<Two, ClassTwo>();
-            Two obj10 = container.Resolve<Two>();
-            
-
-            obj10.FunctionTwo();
+            while (count > 0)
+            {
+                // testing scope type resigtration for class
+                Console.WriteLine();
+                Console.WriteLine("testing scope type resigtration for class");
+                ITest1 obj1 = container.Resolve<ITest1>();
+                obj1.Print();
 
 
+                // testing singleton registration for class
+                Console.WriteLine();
+                Console.WriteLine("testing singleton registration for class");
+                ITest2 obj5 = container.Resolve<ITest2>();
+                obj5.Print();
 
-            //obj11.FunctionTwo();
 
-            Console.ReadLine();
+                // testing Transient type resigtration for class
+                Console.WriteLine();
+                Console.WriteLine("testing Transient type resigtration for class");
+                Three obj11 = container.Resolve<Three>();
+                obj11.FunctionThree();
+
+
+                // testing nested dependency for 2 levels
+                Console.WriteLine();
+                Console.WriteLine("testing nested dependency for 2 levels");
+                One obj9 = container.Resolve<One>();
+                obj9.FunctionOne();
+
+
+                //testing nested dependency for 2 levels with 2 arguments
+                Console.WriteLine();
+                Console.WriteLine("testing nested dependency for 2 levels with 2 arguments");
+                Two obj10 = container.Resolve<Two>();
+                obj10.FunctionTwo();
+
+
+                Console.WriteLine();
+                Console.WriteLine("Please press any Number for next request without zero");
+                count=Convert.ToInt32(Console.ReadLine());
+                container.clearScopedPull();
+            }
+
+            //Console.ReadLine(); 
         }
+
     }
 }

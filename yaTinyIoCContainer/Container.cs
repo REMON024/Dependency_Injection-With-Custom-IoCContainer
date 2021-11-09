@@ -13,7 +13,7 @@ namespace IoCContainer
     {
         Dictionary<Type, RegistrationModel> instanceRegistry = new Dictionary<Type, RegistrationModel>();
 
-        public void RegisterInstanceType<I, C>()
+        public void RegisterScopeType<I, C>()
             where I : class
             where C : class
         {

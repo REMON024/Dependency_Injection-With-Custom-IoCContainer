@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using IoCContainer.Attributes;
 using IoCContainer.Core;
@@ -34,21 +35,21 @@ namespace iocTest
         }
     }
 
-    interface One
+    interface IOne
     {
         void FunctionOne();
     }
 
-    interface Two
+    interface ITwo
     {
         void FunctionTwo();
     }
-    interface Three
+    interface IThree
     {
         void FunctionThree();
     }
 
-    class ClassOne : One
+    class ClassOne : IOne
     {
         ITest1 m_Itest1 = null;
         
@@ -70,15 +71,15 @@ namespace iocTest
         }
     }
 
-    class ClassTwo : Two
+    class ClassTwo : ITwo
     {
-        One m_One = null;
-        Three m_Three = null;
+        IOne m_One = null;
+        IThree m_Three = null;
         ITest2 m_Itest2 = null;
 
         [Dependency]
-        public ClassTwo(ITest2 test2, One one
-            , Three three
+        public ClassTwo(ITest2 test2, IOne one
+            , IThree three
             )
         {
             m_Itest2 = test2;
@@ -97,7 +98,7 @@ namespace iocTest
         }
     }
 
-    class ClassThree : Three
+    class ClassThree : IThree
     {
 
         [Dependency]
@@ -115,6 +116,34 @@ namespace iocTest
         }
     }
 
+    interface IDemoMessage
+    {
+        void ShowMessage();
+    }
+
+    class Message1 : IDemoMessage
+    {
+        private  readonly  DateTime dateTime;
+        public Message1()
+        {
+            dateTime = DateTime.Now;
+
+        }
+        public void ShowMessage()
+        {
+            Console.WriteLine("Hello from Message 1 Date Time: {0}", dateTime);
+
+        }
+    }
+    class Message2 : IDemoMessage
+    {
+        public void ShowMessage()
+        {
+            Console.WriteLine("Hello from Message 2");
+
+        }
+    }
+
     class Program
     {
         static void Main(string[] args)
@@ -123,56 +152,63 @@ namespace iocTest
             IContainer container = new IoCContainer.Container();
 
 
-            container.RegisterInstanceType<ITest1, ClassTest1>();
+            container.RegisterScopeType<ITest1, ClassTest1>();
             container.RegisterSingletonType<ITest2, ClassTest2>();
-            container.RegisterTransientType<Three, ClassThree>();
-            container.RegisterInstanceType<One, ClassOne>();
-            container.RegisterInstanceType<Two, ClassTwo>();
+            container.RegisterTransientType<IThree, ClassThree>();
+            container.RegisterScopeType<IDemoMessage, Message1>();
+            container.RegisterScopeType<IDemoMessage, Message2>();
+            container.RegisterScopeType<IOne, ClassOne>();
+            container.RegisterScopeType<ITwo, ClassTwo>();
+            IDemoMessage obj1 = container.Resolve<IDemoMessage>();
+            obj1.ShowMessage();
+            Thread.Sleep(1000);
+            IDemoMessage obj2 = container.Resolve<IDemoMessage>();
+            obj2.ShowMessage();
 
-            while (count > 0)
-            {
-                // testing scope type resigtration for class
-                Console.WriteLine();
-                Console.WriteLine("testing scope type resigtration for class");
-                ITest1 obj1 = container.Resolve<ITest1>();
-                obj1.Print();
-
-
-                // testing singleton registration for class
-                Console.WriteLine();
-                Console.WriteLine("testing singleton registration for class");
-                ITest2 obj5 = container.Resolve<ITest2>();
-                obj5.Print();
-
-
-                // testing Transient type resigtration for class
-                Console.WriteLine();
-                Console.WriteLine("testing Transient type resigtration for class");
-                Three obj11 = container.Resolve<Three>();
-                obj11.FunctionThree();
+            //while (count > 0)
+            //{
+            //    // testing scope type resigtration for class
+            //    Console.WriteLine();
+            //    Console.WriteLine("testing scope type resigtration for class");
+            //    ITest1 obj1 = container.Resolve<ITest1>();
+            //    obj1.Print();
 
 
-                // testing nested dependency for 2 levels
-                Console.WriteLine();
-                Console.WriteLine("testing nested dependency for 2 levels");
-                One obj9 = container.Resolve<One>();
-                obj9.FunctionOne();
+            //    // testing singleton registration for class
+            //    Console.WriteLine();
+            //    Console.WriteLine("testing singleton registration for class");
+            //    ITest2 obj5 = container.Resolve<ITest2>();
+            //    obj5.Print();
 
 
-                //testing nested dependency for 2 levels with 2 arguments
-                Console.WriteLine();
-                Console.WriteLine("testing nested dependency for 2 levels with 2 arguments");
-                Two obj10 = container.Resolve<Two>();
-                obj10.FunctionTwo();
+            //    // testing Transient type resigtration for class
+            //    Console.WriteLine();
+            //    Console.WriteLine("testing Transient type resigtration for class");
+            //    IThree obj11 = container.Resolve<IThree>();
+            //    obj11.FunctionThree();
 
 
-                Console.WriteLine();
-                Console.WriteLine("Please press any Number for next request without zero");
-                count=Convert.ToInt32(Console.ReadLine());
-                container.clearScopedPull();
-            }
+            //    // testing nested dependency for 2 levels
+            //    Console.WriteLine();
+            //    Console.WriteLine("testing scope type with nested dependency for 2 levels");
+            //    IOne obj9 = container.Resolve<IOne>();
+            //    obj9.FunctionOne();
 
-            //Console.ReadLine(); 
+
+            //    //testing nested dependency for 2 levels with 2 arguments
+            //    Console.WriteLine();
+            //    Console.WriteLine("testing scope type with nested dependency for 2 levels with 2 arguments");
+            //    ITwo obj10 = container.Resolve<ITwo>();
+            //    obj10.FunctionTwo();
+
+
+            //    Console.WriteLine();
+            //    Console.WriteLine("Please press any Number for next request without zero");
+            //    count=Convert.ToInt32(Console.ReadLine());
+            //    container.clearScopedPull();
+            //}
+
+            Console.ReadKey();
         }
 
     }

@@ -2,7 +2,7 @@
 {
     public interface IContainer
     {
-        void RegisterInstanceType<I, C>()
+        void RegisterScopeType<I, C>()
             where I : class
             where C : class;
 
